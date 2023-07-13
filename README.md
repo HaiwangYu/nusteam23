@@ -1,12 +1,26 @@
+# NuSTEAM23
+
+install Singularity: [link](https://docs.sylabs.io/guides/3.0/user-guide/installation.html)
+
+
+get scripts:
 ```
-wire-cell -l stdout -L debug -c check_pdsp_sim_sp.jsonnet -V input=depos.tar.bz2 -V output=frames-pr187.tar.bz2
-wirecell-plot frame -n wave --interactive frames-pr187.tar.bz2 frames-pr187.pdf
-wirecell-plot comp1d -n wave -o tmp.pdf --chmin 700 --chmax 701 --interactive frames-0.20.0.tar.bz2 frames-22154a5.tar.bz2
-wirecell-plot comp1d -n wave -o tmp.pdf --chmin 1230 --chmax 1231 --interactive frames-0.20.0.tar.bz2 frames-22154a5.tar.bz2
+git clone 
 ```
 
+
+get container:
 ```
-wirecell-plot frame -n wave --interactive frames-0.23.0.tar.bz2 frames-0.23.0.pdf
-wirecell-plot comp1d -n wave -o tmp.pdf --chmin 700 --chmax 701 --interactive frames-0.20.0.tar.bz2 frames-0.23.0.tar.bz2
-wirecell-plot comp1d -n wave -o tmp.pdf --chmin 2300 --chmax 2301 --interactive frames-0.20.0.tar.bz2 frames-0.23.0.tar.bz2
+singularity pull larwire-kokkos_2.2.sif docker://hepcce2/larwire-kokkos:2.2
+```
+
+
+run container:
+```
+./run-singularity.sh
+```
+
+run:
+```
+wire-cell -l stdout -L debug -c sim.jsonnet
 ```
