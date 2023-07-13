@@ -5,12 +5,13 @@ install Singularity: [link](https://docs.sylabs.io/guides/3.0/user-guide/install
 
 get scripts:
 ```
-git clone 
+git clone https://github.com/HaiwangYu/nusteam23.git
 ```
 
 
 get container:
 ```
+cd nusteam23
 singularity pull larwire-kokkos_2.2.sif docker://hepcce2/larwire-kokkos:2.2
 ```
 
