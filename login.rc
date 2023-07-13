@@ -1,0 +1,166 @@
+function setup_supported_version {
+  local package_entry=$(ups list -aK+ $1)
+  if [ -z "$package_entry" ]
+  then
+      echo "$1 is not available -- ignoring"
+      return
+  fi
+
+  ups_list_pattern='"(.*)" "(.*)" ".*" "(.*)" ".*"'
+  if [[ ! $package_entry =~ $ups_list_pattern ]]
+  then
+      echo "Malformed ups list entry for $1 -- fatal error"
+      exit 1
+  fi
+
+  local product=${BASH_REMATCH[1]}
+  local version=${BASH_REMATCH[2]}
+  local quals=${BASH_REMATCH[3]}
+  [ -n "$quals" ] && quals="-q $quals" || quals=""
+  setup $product $version $quals
+}
+
+# Setup UPS products
+source /products/setup
+setup_supported_version larwirecell
+setup_supported_version spdlog
+setup_supported_version cmake
+setup_supported_version git
+setup_supported_version gdb
+
+#export WIRECELL_PATH=$WIRECELL_FQ_DIR/wirecell-0.14.0/cfg # main cfg
+export WIRECELL_PATH=$WIRECELL_FQ_DIR/wirecell-0.17.0/cfg/
+
+#####################
+# user specific stuff
+#####################
+export TERM=xterm-256color
+export HOME=/home/yuhw/
+export DISPLAY=:1001
+export XAUTHORITY=/home/yuhw/.Xauthority
+bind '"\e[A":history-search-backward' #PageUp
+bind '"\e[B":history-search-forward' #PageDown
+set autolist
+set autoexpand
+export PS1='[kokkos]$(pwd)\n$'
+alias ls='ls --color=auto'
+alias ll='ls -lh'
+
+# OpenMP
+export OMP_PROC_BIND=spread
+export OMP_PLACES=threads
+
+# nvidia
+export     LD_LIBRARY_PATH=/.singularity.d/libs:$LD_LIBRARY_PATH
+
+# cuda
+export     LD_LIBRARY_PATH=/opt/cuda/lib64:$LD_LIBRARY_PATH
+export                PATH=/opt/cuda/bin:$PATH
+#export     LD_LIBRARY_PATH=/opt/cuda-10.1/lib64:$LD_LIBRARY_PATH
+#export                PATH=/opt/cuda-10.1/bin:$PATH
+
+# kokkos
+export PATH=/opt/kokkos-omp/bin:$PATH
+#export PATH=/opt/kokkos-cuda/bin:$PATH
+#export PATH=/home/yuhw//sl7/kokkos/bin/:$PATH
+
+# spdlog
+#export SPDLOG_INC=/home/yuhw/wc/wct-analysis/csi-kokkos/spdlog/include
+
+# eigen
+#export EIGEN_INC=/home/yuhw/sw/eigen-3.3.7/
+
+# wire-cell-data
+export WIRECELL_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-data:$WIRECELL_PATH # data
+
+# wire-cell-gen-kokkos
+#export LD_LIBRARY_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos-install/lib64/:$LD_LIBRARY_PATH
+export LD_LIBRARY_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/build/kokkos/:$LD_LIBRARY_PATH
+export WIRECELL_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/cfg:$WIRECELL_PATH # gen-kokkos
+
+
+
+
+path-remove ()
+{
+    local IFS=':';
+    local NEWPATH;
+    local DIR;
+    local PATHVARIABLE=${2:-PATH};
+    for DIR in ${!PATHVARIABLE};
+    do  
+        if [ "$DIR" != "$1" ]; then
+            NEWPATH=${NEWPATH:+$NEWPATH:}$DIR;
+        fi;
+    done;
+    export $PATHVARIABLE="$NEWPATH"
+}
+
+path-prepend ()
+{
+    path-remove "$1" "$2";
+    local PATHVARIABLE="${2:-PATH}";
+    export $PATHVARIABLE="$1${!PATHVARIABLE:+:${!PATHVARIABLE}}"
+}
+
+path-append ()
+{
+    path-remove "$1" "$2";
+    local PATHVARIABLE="${2:-PATH}";
+    export $PATHVARIABLE="${!PATHVARIABLE:+${!PATHVARIABLE}:}$1"
+}
+
+find-fhicl ()
+{
+    fhicl_file=$1;
+    for path in `echo $FHICL_FILE_PATH  | sed -e 's/:/\n/g'`;
+    do  
+        find $path -name "$fhicl_file" 2> /dev/null;
+    done
+}
+
+list ()
+{
+    echo $1 | tr ':' '\n'
+}
+
+termtitle ()
+{
+    printf "\033]0;$*\007"
+}
+
+kokkos-cuda ()
+{
+    path-remove /opt/kokkos-omp/bin PATH
+    path-prepend /opt/kokkos-cuda/bin PATH
+}
+
+kokkos-omp ()
+{
+    path-remove /opt/kokkos-cuda/bin PATH
+    path-prepend /opt/kokkos-omp/bin PATH
+}
+
+use-test-genkokkos ()
+{
+    path-prepend /home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos-test/build/kokkos LD_LIBRARY_PATH
+}
+
+use-local-genkokkos ()
+{
+    path-prepend /home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/build/kokkos LD_LIBRARY_PATH
+}
+
+# local wire-cell-toolkit
+use-local-wct ()
+{
+    #export WIRECELL_FQ_DIR=/home/yuhw/wc/wct-analysis/csi-kokkos/opt/
+    export WIRECELL_FQ_DIR=/home/yuhw/wc/larsoft925/lib/ups/wirecell/wctdev/Linux64bit+3.10-2.17-e20-prof/bin/wire-cell
+    export WIRECELL_INC=$WIRECELL_FQ_DIR/include
+    export WIRECELL_LIB=$WIRECELL_FQ_DIR/lib64
+    path-prepend $WIRECELL_FQ_DIR/bin PATH
+    path-prepend $WIRECELL_FQ_DIR/lib64 LD_LIBRARY_PATH
+    path-prepend /home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-toolkit/cfg WIRECELL_PATH
+}
+
+
