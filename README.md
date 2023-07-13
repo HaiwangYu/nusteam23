@@ -25,3 +25,16 @@ run:
 ```
 wire-cell -l stdout -L debug -c sim.jsonnet
 ```
+
+inspect the root file:
+Open the file with `root`
+```
+root -l protodune.root
+```
+
+Within the root interactive session:
+```
+.ls
+hu_gauss0->Draw("colz")
+hu_gauss0->Integral()
+```
