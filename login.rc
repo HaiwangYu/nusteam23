@@ -75,8 +75,8 @@ export WIRECELL_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-data:$WIREC
 
 # wire-cell-gen-kokkos
 #export LD_LIBRARY_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos-install/lib64/:$LD_LIBRARY_PATH
-export LD_LIBRARY_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/build/kokkos/:$LD_LIBRARY_PATH
-export WIRECELL_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/cfg:$WIRECELL_PATH # gen-kokkos
+#export LD_LIBRARY_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/build/kokkos/:$LD_LIBRARY_PATH
+#export WIRECELL_PATH=/home/yuhw/wc/wct-analysis/csi-kokkos/wire-cell-gen-kokkos/cfg:$WIRECELL_PATH # gen-kokkos
 
 
 
